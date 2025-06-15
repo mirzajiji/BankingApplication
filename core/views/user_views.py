@@ -59,6 +59,13 @@ def get_account_balance(request):
 
 @swagger_auto_schema(
     method='get',
+    manual_parameters=[
+        openapi.Parameter('direction', openapi.IN_QUERY, type=openapi.TYPE_STRING),
+        openapi.Parameter('min_amount', openapi.IN_QUERY, type=openapi.TYPE_NUMBER),
+        openapi.Parameter('max_amount', openapi.IN_QUERY, type=openapi.TYPE_NUMBER),
+        openapi.Parameter('start_date', openapi.IN_QUERY, type=openapi.TYPE_STRING, format='date'),
+        openapi.Parameter('end_date', openapi.IN_QUERY, type=openapi.TYPE_STRING, format='date'),
+    ],
     responses={201: 'Get transactions successfully'},
     operation_description="Get transactions",
 
@@ -70,9 +77,28 @@ def get_user_transactions(request):
     transactions = Transaction.objects.filter(
         models.Q(user=request.user) | models.Q(receiver=request.user)
     ).order_by('-created_at')
+    direction = request.query_params.get('direction')
+    min_amount = request.query_params.get('min_amount')
+    max_amount = request.query_params.get('max_amount')
+    start_date = request.query_params.get('start_date')
+    end_date = request.query_params.get('end_date')
 
+    if direction:
+        if direction == 'income':
+            transactions = transactions.filter(receiver=user)
+        elif direction == 'outcome':
+            transactions = transactions.filter(user=user)
+    if min_amount:
+        transactions = transactions.filter(amount__gte=min_amount)
+    if max_amount:
+        transactions = transactions.filter(amount__lte=max_amount)
+    if start_date:
+        transactions = transactions.filter(created_at__date__gte=start_date)
+    if end_date:
+        transactions = transactions.filter(created_at__date__lte=end_date)
 
-    serializer = TransactionSerializer(transactions, many=True,context={'request': request})
+    transactions = transactions.order_by('-created_at')
+    serializer = TransactionSerializer(transactions, many=True, context={'request': request})
     return Response(serializer.data)
 
 @swagger_auto_schema(
