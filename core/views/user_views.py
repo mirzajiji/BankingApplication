@@ -1,4 +1,3 @@
-from django.db.models.query_utils import Q
 
 from core.models import User, BankAccount, Transaction
 from core.serializers.transaction_serializers import TransactionSerializer
@@ -6,6 +5,7 @@ from core.serializers.transfer_serializers import TransferSerializer
 from core.serializers.user_serializers import RegistrationSerializer
 from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from rest_framework import status
 from rest_framework.decorators import api_view,permission_classes
 from rest_framework.response import Response
@@ -74,3 +74,33 @@ def get_user_transactions(request):
 
     serializer = TransactionSerializer(transactions, many=True,context={'request': request})
     return Response(serializer.data)
+
+@swagger_auto_schema(
+    method='get',
+    manual_parameters=[
+        openapi.Parameter(
+            'id',
+            openapi.IN_QUERY,
+            description="Transaction ID",
+            type=openapi.TYPE_INTEGER,
+            required=True
+        )
+    ],
+    responses={200: "Get transaction successfully"},
+    operation_description="Get a specific transaction by ID",
+)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_transaction_by_id(request):
+    transaction_id = request.query_params.get('id')
+
+    if not transaction_id:
+        return Response({"error": "Transaction ID is required"}, status=400)
+
+    try:
+        transaction = Transaction.objects.get(id=transaction_id)
+    except Transaction.DoesNotExist:
+        return Response({"error": "Transaction not found"}, status=404)
+
+    serializer = TransactionSerializer(transaction, context={'request': request})
+    return Response(serializer.data, status=200)

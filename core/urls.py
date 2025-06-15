@@ -1,6 +1,7 @@
 from core import admin
 from core.views.root import api_root
-from core.views.user_views import register_user, user_to_user_transaction, get_account_balance, get_user_transactions
+from core.views.user_views import register_user, user_to_user_transaction, get_account_balance, get_user_transactions, \
+    get_transaction_by_id
 from django.urls import path
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -18,4 +19,6 @@ urlpatterns = [
     path('transfer/',  user_to_user_transaction, name='user_to_user_transaction'),
     path('balance/',get_account_balance, name='get_account_balance'),
     path('transactions/', get_user_transactions, name='get_transactions'),
+    path('transaction/', get_transaction_by_id, name='get-transaction-by-id'),
+
 ]
