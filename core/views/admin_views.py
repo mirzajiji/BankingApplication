@@ -6,11 +6,11 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 @permission_classes([IsAdminUser])
 def admin_add_balance(request):
-    email = request.data.get('email')
-    amount = request.data.get('amount')
+    email = request.data.get("email")
+    amount = request.data.get("amount")
 
     try:
         user = User.objects.get(email=email)
@@ -19,11 +19,11 @@ def admin_add_balance(request):
         account.save()
 
         Transaction.objects.create(
-            user = user,
-            amount = amount,
-            type='admin_credit',
+            user=user,
+            amount=amount,
+            type="admin_credit",
         )
 
-        return Response({'message': f'{amount} added to {email}'}, status=200)
+        return Response({"message": f"{amount} added to {email}"}, status=200)
     except User.DoesNotExist:
-        return Response({'message': 'User does not exist'}, status=404)
+        return Response({"message": "User does not exist"}, status=404)
