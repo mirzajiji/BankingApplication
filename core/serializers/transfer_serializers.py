@@ -47,7 +47,6 @@ class TransferSerializer(serializers.Serializer):
             receiver=receiver,
             amount=amount,
             type="user_transfer",
-            # direction='outcome'
         )
 
 
