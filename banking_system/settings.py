@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'core',
+    'drf_yasg',
 ]
 
 AUTH_USER_MODEL = 'core.User'
@@ -47,6 +48,15 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+}
+
+from datetime import timedelta
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=5),         # 🔓 access token valid for 2 hours
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=14),        # 🔁 refresh token valid for 14 days
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": False,
+    "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
 MIDDLEWARE = [

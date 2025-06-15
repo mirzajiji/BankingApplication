@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from core.models import User
+from core.models import User, BankAccount
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -10,4 +10,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
         fields = ['email', 'password']
 
     def create(self, validated_data):
-        return User.objects.create_user(**validated_data)
+        user = User.objects.create_user(**validated_data)
+        BankAccount.objects.create(user=user)
+        return user
