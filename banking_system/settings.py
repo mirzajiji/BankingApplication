@@ -53,11 +53,22 @@ REST_FRAMEWORK = {
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(hours=5),  # 🔓 access token valid for 2 hours
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=14),  # 🔁 refresh token valid for 14 days
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=5),  #  access token valid for 2 hours
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=14),  #  refresh token valid for 14 days
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": False,
     "AUTH_HEADER_TYPES": ("Bearer",),
+}
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+            'description': 'Enter token like: Bearer <your_token>',
+        }
+    }
 }
 
 MIDDLEWARE = [
